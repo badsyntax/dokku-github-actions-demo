@@ -10,22 +10,82 @@ jobs:
   review_app:
     runs-on: ubuntu-latest
     # only run when a pull request is opened
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    if: github.event_name == 'pull_request'
     steps:
       - name: Cloning repo
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
+      - name: Create deployment
+        id: create_deployment
+        uses: octokit/request-action@v2.0.2
+        with:
+          route: POST /repos/:repository/deployments
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          environment: review
+          required_contexts: '[]'
+          production_environment: true
+          auto_merge: false
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: Set deployment status to in progress
+        uses: octokit/request-action@v2.0.2
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: review
+          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          state: in_progress
+          mediaType: '{"previews": ["flash", "ant-man"]}'  # required for setting in_progress state and environment_url
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
           # create a review app
           command: review-apps:create
+          git_push_flags: '--force'
           git_remote_url: ${{ secrets.GIT_REMOTE_URL }}
           # specify a name for the review app
-          review_app_name: review-appname-${{ github.event.pull_request.number }}
+          review_app_name: github-actions-demo-app-${{ github.event.pull_request.number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set GitHub deployment status to success
+        id: successful_deployment
+        uses: octokit/request-action@v2.0.2
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: review
+          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          mediaType: '{"previews": ["ant-man"]}'
+          state: success
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: Set GitHub deployment status to failure
+        id: failed_deployment
+        uses: octokit/request-action@v2.0.2
+        if: failure()
+        with:
+          route: POST /repos/:repository/deployments/:deployment/statuses
+          repository: ${{ github.repository }}
+          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
+          environment: review
+          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
+          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          mediaType: '{"previews": ["ant-man"]}'
+          state: failure
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
   destroy_review_app:
     runs-on: ubuntu-latest
@@ -39,5 +99,5 @@ jobs:
           command: review-apps:destroy
           git_remote_url: ${{ secrets.GIT_REMOTE_URL }}
           # specify a name for the review app
-          review_app_name: review-appname-${{ github.event.pull_request.number }}
+          review_app_name: github-actions-demo-app-${{ github.event.pull_request.number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

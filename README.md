@@ -1,26 +1,23 @@
 # Dokku GitHub Action Example
 
-An example repo showing how to use all the features of the official [dokku GitHub action](https://github.com/dokku/github-action).
+An example repo showing how to use the official [dokku GitHub action](https://github.com/dokku/github-action) to deploy your app with continuous delivery.
 
 ## GitHub Secrets
 
 The following secrets must be set:
 
 - `GIT_REMOTE_URL` (eg `'ssh://dokku@dokku.me:22/appname'`)
+- `SSH_PRIVATE_KEY`
 
 ## dokku Setup
-
-The examples relies on an example app existing on the dokku server:
 
 ```bash
 # on server
 dokku apps:create github-actions-demo-app
 ```
 
-Add the remote and deploy the app:
-
 ```bash
-## on local
+# on local
 git remote add dokku dokku@dokku.proxima-web.com:github-actions-demo-app
 git push dokku
 ```
@@ -34,18 +31,13 @@ dokku letsencrypt github-actions-demo-ap
 
 Visit https://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
 
-## Build and Deploy Docker Image
-
-The following demonstrates how to build the docker image and deploy to GitHub Container Registry:
-
-```bash
-docker build -t ghcr.io/badsyntax/github-actions-demo-app:latest .
-echo $CR_PAT | docker login ghcr.io -u badsyntax --password-stdin
-docker push ghcr.io/badsyntax/github-actions-demo-app:latest
-```
-
-To automate this
-
 ## Review Apps
 
+Each time a pull request is opened a new review app is deployed.
 
+The [example workflow](./.github/workflows/review-app.yml) uses GitHub Deploys and requires the following environments to be created:
+
+- production
+- review
+
+Access the environment settings in your repo settings.
