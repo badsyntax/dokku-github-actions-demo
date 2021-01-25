@@ -58,6 +58,7 @@ jobs:
 
       - name: Set GitHub deployment status to success
         id: successful_deployment
+        if: success()
         uses: octokit/request-action@v2.0.2
         with:
           route: POST /repos/:repository/deployments/:deployment/statuses
