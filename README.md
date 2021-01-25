@@ -2,15 +2,37 @@
 
 An example repo showing how to use all the features of the official [dokku GitHub action](https://github.com/dokku/github-action).
 
+## GitHub Secrets
+
+The following secrets must be set:
+
+- `GIT_REMOTE_URL` (eg `'ssh://dokku@dokku.me:22/appname'`)
+
 ## dokku Setup
 
 The examples relies on an example app existing on the dokku server:
 
 ```bash
+# on server
 dokku apps:create github-actions-demo-app
 ```
 
-We'll be using the [`Dockerfile`](./Dockerfile) to package our app.
+Add the remote and deploy the app:
+
+```bash
+## on local
+git remote add dokku dokku@dokku.proxima-web.com:github-actions-demo-app
+git push dokku
+```
+
+Once deployed we can add TLS:
+
+```bash
+# on server
+dokku letsencrypt github-actions-demo-ap
+```
+
+Visit https://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
 
 ## Build and Deploy Docker Image
 
