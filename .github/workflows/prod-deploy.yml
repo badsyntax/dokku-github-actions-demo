@@ -1,5 +1,5 @@
 ---
-name: 'deploy'
+name: 'Deploy Production App'
 
 # yamllint disable-line rule:truthy
 on:
@@ -9,6 +9,7 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to production
     runs-on: ubuntu-latest
     steps:
       - name: Cloning repo
