@@ -22,14 +22,7 @@ git remote add dokku dokku@dokku.proxima-web.com:github-actions-demo-app
 git push dokku
 ```
 
-Once deployed we can add TLS:
-
-```bash
-# on server
-dokku letsencrypt github-actions-demo-ap
-```
-
-Visit https://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
+Visit http://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
 
 ## Review Apps
 
