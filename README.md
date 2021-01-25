@@ -33,4 +33,4 @@ The [example workflow](./.github/workflows/review-app.yml) uses GitHub Deploys a
 - production
 - review
 
-Access the environment settings in your repo settings.
+(You can add new environments in your repo settings.)
