@@ -20,6 +20,10 @@ jobs:
       - name: Set app version
         run: |
           echo "document.write('${{ github.event.pull_request.number }}');" > html/script.js
+          git config user.email "demo@example"
+          git config user.name "dokku"
+          git add html
+          git commit -m "Bump version"
 
       - name: Push to dokku
         uses: dokku/github-action@master
