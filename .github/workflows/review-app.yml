@@ -17,6 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set app version
+        run: |
+          echo "document.write('${{ github.event.pull_request.number }}');" > html/script.js
+
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
