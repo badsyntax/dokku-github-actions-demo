@@ -9,11 +9,7 @@ GitHub Deploys is still in public beta but it's stablish and is a useful mechani
 This repository demonstrates how to:
 
 - Deploy `review` apps to a `review` environment when a pull request is created or updated.
-- Deploy a `production` app to a `production` environment on changes to the main/master branch. No deployment review is required.
-
-### Review Apps
-
-Each time a pull request is opened or updated a new review app is deployed. The review app will be deployed to url `http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com`.
+- Deploy a `production` app to a `production` environment on changes to the main/master branch.
 
 You'll need to create the following following environments in the repository settings:
 
@@ -22,46 +18,34 @@ You'll need to create the following following environments in the repository set
 
 Take advantage of the [environment protection rules](https://docs.github.com/en/actions/reference/environments#environment-protection-rules) to enable deploy restrictions.
 
+### Review Apps
+
+Each time a pull request is opened or updated a new review app is deployed to url `http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com`.
+
 #### Screenshots
 
-Pull request created, but deploy is awaiting approval:
+The following screenshots shows the deploy workflow when the `review` environment requires reviewers:
 
-GitHub Actions deploy workflow awaiting approval:
+##### Pull request created, but deploy is awaiting approval
 
-Approving the deploy workflow:
+<img src="./screenshots/awaiting-approval.png" style="max-width:600px" />
 
-Deployment in progress:
+##### GitHub Actions deploy workflow awaiting approval
 
-Deployment successful:
+<img src="./screenshots/github-actions-review.png" style="max-width:600px" />
 
+##### Approving the deploy workflow
 
+<img src="./screenshots/github-actions-approve-deploy.png" style="max-width:600px" />
 
-## GitHub Secrets
+##### Deployment in progress
 
-The following secrets must be set:
+<img src="./screenshots/deploy-started.png" style="max-width:600px" />
 
-- `SSH_PRIVATE_KEY`
+##### Deployment successful
 
-You'll see reference to a secret called `GITHUB_TOKEN` in the workflow files, but there's no need to manually set this yourself as this is set by GitHub Actions.
+<img src="./screenshots/successful-deploy.png" style="max-width:600px" />
 
-If you want to see debug information, you can create a secret called `ACTIONS_STEP_DEBUG` with a value of `true`.
+### Production App
 
-## dokku Setup
-
-```bash
-# on server
-dokku apps:create github-actions-demo-app
-```
-
-```bash
-# on local
-git remote add dokku dokku@dokku.proxima-web.com:github-actions-demo-app
-git push dokku
-```
-
-Visit http://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
-
-## Review Apps
-
-
-
+Each time the main/master branch is created or updated a new production app is deployed to `http://github-actions-demo-app.dokku.proxima-web.com`.
