@@ -25,7 +25,6 @@ jobs:
           route: POST /repos/:repository/deployments
           repository: ${{ github.repository }}
           ref: ${{ github.event.pull_request.head.ref }}
-          environment: review
           required_contexts: '[]'
           production_environment: true
           auto_merge: false
@@ -38,7 +37,7 @@ jobs:
           route: POST /repos/:repository/deployments/:deployment/statuses
           repository: ${{ github.repository }}
           deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
+          production_environment: true
           environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
           log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           state: in_progress
@@ -65,7 +64,6 @@ jobs:
           route: POST /repos/:repository/deployments/:deployment/statuses
           repository: ${{ github.repository }}
           deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
           environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
           log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           mediaType: '{"previews": ["ant-man"]}'
@@ -82,7 +80,6 @@ jobs:
           route: POST /repos/:repository/deployments/:deployment/statuses
           repository: ${{ github.repository }}
           deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
           environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
           log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           mediaType: '{"previews": ["ant-man"]}'
