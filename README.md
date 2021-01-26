@@ -8,7 +8,7 @@ GitHub Deploys is still in public beta but it's stablish and is a useful mechani
 
 This repository demonstrates how to:
 
-- Deploy `review` apps to a `review` environment where a pull request is created or updated. Assigned reviewers will need to approve the deployment.
+- Deploy `review` apps to a `review` environment when a pull request is created or updated.
 - Deploy a `production` app to a `production` environment on changes to the main/master branch. No deployment review is required.
 
 ### Review Apps
@@ -32,7 +32,8 @@ Approving the deploy workflow:
 
 Deployment in progress:
 
-Deployment
+Deployment successful:
+
 
 
 ## GitHub Secrets
