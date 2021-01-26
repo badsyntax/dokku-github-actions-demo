@@ -6,8 +6,9 @@ An example repo showing how to use the official [dokku GitHub action](https://gi
 
 The following secrets must be set:
 
-- `GIT_REMOTE_URL` (eg `'ssh://dokku@dokku.me:22/appname'`)
 - `SSH_PRIVATE_KEY`
+
+You'll see reference to a secret called `GITHUB_TOKEN` in the workflow files, but there's no need to manually set this yourself as this is set by GitHub Actions.
 
 ## dokku Setup
 
@@ -28,9 +29,9 @@ Visit http://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deplo
 
 Each time a pull request is opened a new review app is deployed.
 
-The [example workflow](./.github/workflows/review-app.yml) uses GitHub Deploys and requires the following environments to be created:
+The [example workflow](./.github/workflows/review-app.yml) uses GitHub Deploys and requires the following [environments](https://docs.github.com/en/actions/reference/environments) to be created:
 
 - production
 - review
 
-(You can add new environments in your repo settings.)
+You can add new environments in your repo settings. You can also take advantage of [environment protection rules](https://docs.github.com/en/actions/reference/environments#environment-protection-rules) to request reviews before deployments can take place.

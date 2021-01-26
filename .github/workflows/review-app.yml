@@ -51,7 +51,7 @@ jobs:
           # create a review app
           command: review-apps:create
           git_push_flags: '--force'
-          git_remote_url: ${{ secrets.GIT_REMOTE_URL }}
+          git_remote_url: 'ssh://dokku@dokku.proxima-web.com:22/github-actions-demo-app'
           # specify a name for the review app
           review_app_name: github-actions-demo-app-${{ github.event.pull_request.number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -99,7 +99,7 @@ jobs:
         with:
           # destroy a review app
           command: review-apps:destroy
-          git_remote_url: ${{ secrets.GIT_REMOTE_URL }}
+          git_remote_url: 'ssh://dokku@dokku.proxima-web.com:22/github-actions-demo-app'
           # specify a name for the review app
           review_app_name: github-actions-demo-app-${{ github.event.pull_request.number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
