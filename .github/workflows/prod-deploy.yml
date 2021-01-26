@@ -9,7 +9,6 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to production
     runs-on: ubuntu-latest
 
     # deploy to the production environment
