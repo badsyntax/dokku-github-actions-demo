@@ -10,6 +10,8 @@ The following secrets must be set:
 
 You'll see reference to a secret called `GITHUB_TOKEN` in the workflow files, but there's no need to manually set this yourself as this is set by GitHub Actions.
 
+If you want to see debug information, you can create a secret called `ACTIONS_STEP_DEBUG` with a value of `true`.
+
 ## dokku Setup
 
 ```bash
@@ -29,7 +31,7 @@ Visit http://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deplo
 
 Each time a pull request is opened a new review app is deployed.
 
-The [example workflow](./.github/workflows/review-app.yml) uses GitHub Deploys and requires the following [environments](https://docs.github.com/en/actions/reference/environments) to be created:
+The [example workflow](./.github/workflows/review-app.yml) uses [GitHub Deploys](https://docs.github.com/en/rest/reference/repos#deployments) and requires the following [environments](https://docs.github.com/en/actions/reference/environments) to be created:
 
 - production
 - review
