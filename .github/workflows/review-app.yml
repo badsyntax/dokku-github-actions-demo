@@ -3,48 +3,51 @@ name: 'Deploy Review App'
 
 # yamllint disable-line rule:truthy
 on:
-  # onl run this workflow on pull request events
-  pull_request
+  # only run this workflow on pull request events
+  pull_request:
+    types: [opened, synchronize, closed]
 
 jobs:
   review_app:
     runs-on: ubuntu-latest
-    # only run when a pull request is opened
-    if: github.event_name == 'pull_request'
-    environment: review
+    # only run when a pull request is opened or synchronized
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize')
+
+    # deploy to the review environment
+    environment:
+      name: review
+      url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
+
     steps:
       - name: Cloning repo
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Create deployment
-        id: create_deployment
-        uses: octokit/request-action@v2.0.26
-        with:
-          route: POST /repos/:repository/deployments
-          repository: ${{ github.repository }}
-          ref: ${{ github.event.pull_request.head.ref }}
-          environment: review
-          required_contexts: '[]'
-          production_environment: true
-          auto_merge: false
+      - name: Dump GitHub context
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: Set deployment status to in progress
-        uses: octokit/request-action@v2.0.26
-        with:
-          route: POST /repos/:repository/deployments/:deployment/statuses
-          repository: ${{ github.repository }}
-          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
-          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
-          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          state: in_progress
-          mediaType: '{"previews": ["flash", "ant-man"]}'  # required for setting in_progress state and environment_url
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          JOB_CONTEXT: ${{ toJSON(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJSON(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJSON(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
 
       - name: Push to dokku
         uses: dokku/github-action@master
@@ -56,39 +59,6 @@ jobs:
           # specify a name for the review app
           review_app_name: github-actions-demo-app-${{ github.event.pull_request.number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Set GitHub deployment status to success
-        id: successful_deployment
-        if: success()
-        uses: octokit/request-action@v2.0.26
-        with:
-          route: POST /repos/:repository/deployments/:deployment/statuses
-          repository: ${{ github.repository }}
-          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
-          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
-          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          mediaType: '{"previews": ["ant-man"]}'
-          state: success
-          auto_inactive: false
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: Set GitHub deployment status to failure
-        id: failed_deployment
-        uses: octokit/request-action@v2.0.26
-        if: failure()
-        with:
-          route: POST /repos/:repository/deployments/:deployment/statuses
-          repository: ${{ github.repository }}
-          deployment: ${{ fromJson(steps.create_deployment.outputs.data).id }}
-          environment: review
-          environment_url: http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com
-          log_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          mediaType: '{"previews": ["ant-man"]}'
-          state: failure
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
   destroy_review_app:
     runs-on: ubuntu-latest

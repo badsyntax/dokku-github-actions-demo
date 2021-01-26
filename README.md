@@ -1,39 +1,51 @@
 # Dokku GitHub Action Example
 
-An example repo showing how to use the official [dokku GitHub action](https://github.com/dokku/github-action) to deploy your app with continuous delivery.
+How to use the official [dokku GitHub action](https://github.com/dokku/github-action) to deploy your app using continuous delivery with GitHub Actions and GitHub Deploys.
 
-## GitHub Secrets
+GitHub Deploys is still in public beta but it's stablish and is a useful mechanism to manage your deployment workflows. You can use [environment protection rules](https://docs.github.com/en/actions/reference/environments#environment-protection-rules) to give you granular control over [who can deploy](https://docs.github.com/en/actions/managing-workflow-runs/reviewing-deployments) and to where.
 
-The following secrets must be set:
+## Workflows
 
-- `SSH_PRIVATE_KEY`
+This repository demonstrates how to:
 
-You'll see reference to a secret called `GITHUB_TOKEN` in the workflow files, but there's no need to manually set this yourself as this is set by GitHub Actions.
+- Deploy `review` apps to a `review` environment when a pull request is created or updated.
+- Deploy a `production` app to a `production` environment on changes to the main/master branch.
 
-If you want to see debug information, you can create a secret called `ACTIONS_STEP_DEBUG` with a value of `true`.
-
-## dokku Setup
-
-```bash
-# on server
-dokku apps:create github-actions-demo-app
-```
-
-```bash
-# on local
-git remote add dokku dokku@dokku.proxima-web.com:github-actions-demo-app
-git push dokku
-```
-
-Visit http://github-actions-demo-app.dokku.proxima-web.com/ to confirm the deployment was successful.
-
-## Review Apps
-
-Each time a pull request is opened a new review app is deployed.
-
-The [example workflow](./.github/workflows/review-app.yml) uses [GitHub Deploys](https://docs.github.com/en/rest/reference/repos#deployments) and requires the following [environments](https://docs.github.com/en/actions/reference/environments) to be created:
+You'll need to create the following following environments in the repository settings:
 
 - production
 - review
 
-You can add new environments in your repo settings. You can also take advantage of [environment protection rules](https://docs.github.com/en/actions/reference/environments#environment-protection-rules) to request reviews before deployments can take place.
+Take advantage of the [environment protection rules](https://docs.github.com/en/actions/reference/environments#environment-protection-rules) to enable deploy restrictions.
+
+### Review Apps
+
+Each time a pull request is opened or updated a new review app is deployed to url `http://github-actions-demo-app-${{ github.event.pull_request.number }}.dokku.proxima-web.com`.
+
+#### Screenshots
+
+The following screenshots shows the deploy workflow when the `review` environment requires reviewers:
+
+##### Pull request created, but deploy is awaiting approval
+
+<img src="./screenshots/awaiting-approval.png" style="max-width:600px" />
+
+##### GitHub Actions deploy workflow awaiting approval
+
+<img src="./screenshots/github-actions-review.png" style="max-width:600px" />
+
+##### Approving the deploy workflow
+
+<img src="./screenshots/github-actions-approve-deploy.png" style="max-width:600px" />
+
+##### Deployment in progress
+
+<img src="./screenshots/deploy-started.png" style="max-width:600px" />
+
+##### Deployment successful
+
+<img src="./screenshots/successful-deploy.png" style="max-width:600px" />
+
+### Production App
+
+Each time the main/master branch is created or updated a new production app is deployed to `http://github-actions-demo-app.dokku.proxima-web.com`.
