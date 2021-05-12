@@ -19,7 +19,7 @@ jobs:
 
       - name: Create deployment
         id: create_deployment
-        uses: octokit/request-action@v2.0.26
+        uses: octokit/request-action@v2.1.0
         with:
           route: POST /repos/:repository/deployments
           repository: ${{ github.repository }}
@@ -32,7 +32,7 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: Set deployment status to in progress
-        uses: octokit/request-action@v2.0.26
+        uses: octokit/request-action@v2.1.0
         with:
           route: POST /repos/:repository/deployments/:deployment/statuses
           repository: ${{ github.repository }}
@@ -54,7 +54,7 @@ jobs:
       - name: Set GitHub deployment status to success
         id: successful_deployment
         if: success()
-        uses: octokit/request-action@v2.0.26
+        uses: octokit/request-action@v2.1.0
         with:
           route: POST /repos/:repository/deployments/:deployment/statuses
           repository: ${{ github.repository }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Set GitHub deployment status to failure
         id: failed_deployment
-        uses: octokit/request-action@v2.0.26
+        uses: octokit/request-action@v2.1.0
         if: failure()
         with:
           route: POST /repos/:repository/deployments/:deployment/statuses
